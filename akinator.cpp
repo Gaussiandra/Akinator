@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
-//#include "tree.hpp"
+//#include "tree.hpp" ??
 #include "akinator.hpp"
 
 int main(const int argc, const char *argv[]) {
@@ -26,12 +26,10 @@ int main(const int argc, const char *argv[]) {
     return 0;
 }
 
-// исправить баг с вводом
-void playGame(node *root) {
-    node *curNode = root; ///????
+void playGame(node *curNode) {
     while (true) {
         printf("%s%s", curNode->data, "? [Y/N] ");
-        int answer = getchar(); getchar();
+        int answer = readOneChar();
 
         if (answer == 'Y') {
             if (curNode->left == nullptr || curNode->right == nullptr) {
@@ -47,15 +45,18 @@ void playGame(node *root) {
                 printf("I lost!\n");
 
                 printf("Do you want to add a new character? [Y/N] ");
-                answer = getchar(); getchar();
+                answer = readOneChar();
                 if (answer == 'Y') {
                     char charName[MAX_NODE_NAME_LEN]    = {0},
                          featureName[MAX_NODE_NAME_LEN] = {0};
 
                     printf("Enter new character name: ");
                     fgets(charName, MAX_NODE_NAME_LEN, stdin);
+                    charName[strlen(charName) - 1] = '\0';
+
                     printf("Enter character's feature: ");
                     fgets(featureName, MAX_NODE_NAME_LEN, stdin);
+                    featureName[strlen(featureName) - 1] = '\0';
                     addNewCharacter(curNode, charName, featureName);
                     printf("Character was added.\n");
                 } 
@@ -76,7 +77,6 @@ void playGame(node *root) {
     }
 }
 
-// можно ли красивее?
 void addNewCharacter(node *curNode, char name[], char feature[]) {
     node *parent = curNode->parent;
     node **nodeToChange = nullptr;
@@ -132,21 +132,81 @@ void saveGraphPic(node *curNode) {
     system(dumpCmd);
 }
 
+void showCharDescription(node *curNode) {
+    char name[MAX_NODE_NAME_LEN] = {0};
+    printf("Enter character to describe: ");
+    scanf("%s", name); getchar();
+
+    nodePathElem_t path[MAX_NODE_COUNT];
+    getNodePath(path, name, curNode, true, 0);
+
+    if (!path[0].nodePtr) {
+        printf("Character wasn't found.\n");
+        return;
+    }
+
+    bool isPosPrinted = printPositiveFeatures(path, name);
+    printNegativeFeatures(path, name, isPosPrinted);
+    printf(".\n");
+}
+
+bool printPositiveFeatures(nodePathElem_t path[], char name[]) {
+    bool isPosPrinted = false;
+    for (size_t i = 0; i < MAX_NODE_COUNT - 1 && path[i + 1].nodePtr; ++i) {
+        if (path[i + 1].isLeftChild && path[i+1].nodePtr) {
+            if (!isPosPrinted) {
+                isPosPrinted = true;
+                printf("%s is ", name);
+            }
+            printf("%s ", path[i].nodePtr->data);
+        }
+    }
+    
+    return isPosPrinted;
+}
+
+bool printNegativeFeatures(nodePathElem_t path[], char name[], bool isPosPrinted) {
+    bool isNegPrinted = false;
+    for (size_t i = 0; (i < MAX_NODE_COUNT - 1) && path[i + 1].nodePtr; ++i) {
+        if (!path[i + 1].isLeftChild) {
+            if (isPosPrinted) {
+                isPosPrinted = false;
+                isNegPrinted = true;
+                printf("but isn't");
+            }
+            else if (!isNegPrinted && !isPosPrinted) {
+                isNegPrinted = true;
+                printf("%s isn't", name);
+            }
+            printf(" %s", path[i].nodePtr->data);
+        }
+    }
+
+    return isNegPrinted;
+}
+
+void showDifference(node *curNode) {
+    
+}
+
 void loadGameMenu(node *curNode) {
     while (true) {
         printf("Possible actions:\n");
         printf("1. Play akinator game.\n");
-        printf("2. Show differences between objects.\n");
-        printf("3. Save database visualization.\n");
-        printf("4. Exit.\n");
+        printf("2. Show character description.\n");
+        printf("3. Show differences between objects.\n");
+        printf("4. Save database visualization.\n");
+        printf("5. Exit.\n");
         printf("Choose action:\n");
 
-        int answer = getchar(); getchar();
+        int answer = readOneChar();
         switch (answer) {
             case '1': playGame(curNode); break;
-            case '2': break;
-            case '3': saveGraphPic(curNode); break;
-            case '4': return;
+            case '2': showCharDescription(curNode); break;
+            case '3': showDifferences(curNode); break;
+            case '4': saveGraphPic(curNode); break;
+            case '5': return;
+            default:  break;
         }
 
         printf("\n========\n\n");
@@ -184,4 +244,9 @@ ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile) {
 
     fclose(file);
     return OKAY;
+}
+
+int readOneChar() {
+    int input = getchar(); getchar();
+    return input;
 }

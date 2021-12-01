@@ -37,6 +37,25 @@ size_t buildTreeFromStr(char *inputSequence, size_t length, size_t i, node *curN
     return i;
 }
 
+bool getNodePath(nodePathElem_t path[], const char name[], node *curNode, bool isLeft, size_t arrSize) {
+    nodePathElem_t newElem;
+    newElem.isLeftChild = isLeft;
+    newElem.nodePtr = curNode;
+    path[arrSize++]= newElem;
+
+    if (!strcmp(curNode->data, name)) {
+        return true;
+    }
+    else if ((curNode->left  && getNodePath(path, name, curNode->left,  true,  arrSize)) ||
+             (curNode->right && getNodePath(path, name, curNode->right, false, arrSize))) {
+        return true;
+    }
+
+    newElem.nodePtr = nullptr;
+    path[--arrSize] = newElem;
+    return false;
+}
+
 node* createNode(node *parent) {
     node *newNode = (node*) calloc(1, sizeof(node));
     newNode->parent = parent;

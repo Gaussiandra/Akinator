@@ -1,7 +1,7 @@
 #include "tree.hpp"
 
-const char dotSavingPath[] = "/home/ilya/code/akinator/dump.dot",
-           picSavingPath[] = "/home/ilya/code/akinator/dump.png";
+const char dotSavingPath[] = "dump.dot",
+           picSavingPath[] = "dump.png";
 
 const size_t MAX_CMD_LEN = 100;
 const size_t MAX_NODE_NAME_LEN = 100;
@@ -17,9 +17,13 @@ enum ErrorCodes {
 
 #define RETURN_ON_ERROR(func) { ErrorCodes error = (func); if (error) return error; }
 
-ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile);
 void playGame(node *curNode);
 void addNewCharacter(node *curNode, char name[], char feature[]);
 void dumpGraph(FILE *dotFile, node *curNode, size_t depth, const char prevName[] = FIRST_NODE_NAME);
 void saveGraphPic(node *curNode);
+void showCharDescription(node *curNode);
+bool printPositiveFeatures(nodePathElem_t path[], char name[]);
+bool printNegativeFeatures(nodePathElem_t path[], char name[], bool isPosPrinted);
 void loadGameMenu(node *curNode);
+ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile);
+int readOneChar();
