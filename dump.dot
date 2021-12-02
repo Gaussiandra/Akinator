@@ -27,7 +27,7 @@ ZRLL [shape=rect, label="Ded"];
 ZRL -> ZRLR;
 ZRLR [shape=rect, label="Adam"];
 ZR -> ZRR;
-ZRR [shape=rect, label="Does it has a wolf"];
+ZRR [shape=rect, label="Does it have a wolf"];
 ZRR -> ZRRL;
 ZRRL [shape=rect, label="Katya"];
 ZRR -> ZRRR;
