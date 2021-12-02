@@ -1,3 +1,3 @@
 # Akinator
 
-gtts[https://github.com/Shadowsith/gtts] should be installed.
+[gtts](https://github.com/Shadowsith/gtts) must be installed.
