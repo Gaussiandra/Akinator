@@ -35,5 +35,9 @@ ZRRR [shape=rect, label="Is it fluffy"];
 ZRRR -> ZRRRL;
 ZRRRL [shape=rect, label="Tishka"];
 ZRRR -> ZRRRR;
-ZRRRR [shape=rect, label="Kirill"];
+ZRRRR [shape=rect, label="huggable "];
+ZRRRR -> ZRRRRL;
+ZRRRRL [shape=rect, label="Volka"];
+ZRRRR -> ZRRRRR;
+ZRRRRR [shape=rect, label="Kirill"];
 }

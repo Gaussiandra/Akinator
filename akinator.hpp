@@ -1,11 +1,11 @@
+#pragma once
+
 #include "tree.hpp"
 
-const char dotSavingPath[] = "dump.dot",
-           picSavingPath[] = "dump.png";
-
-const size_t MAX_CMD_LEN = 250;
-const size_t MAX_NODE_NAME_LEN = 100;
-const char FIRST_NODE_NAME[] = "Z";
+extern const char dotSavingPath[], picSavingPath[];
+extern const size_t MAX_CMD_LEN;
+extern const size_t MAX_NODE_NAME_LEN;
+extern const char FIRST_NODE_NAME[];
 
 enum ErrorCodes {
     OKAY = 0,
@@ -16,7 +16,6 @@ enum ErrorCodes {
 };
 
 #define RETURN_ON_ERROR(func) { ErrorCodes error = (func); if (error) return error; }
-#define USE_SPEAKER
                    
 #ifdef USE_SPEAKER
     #define outputString(...) {                                     \
@@ -24,15 +23,9 @@ enum ErrorCodes {
                                                                     \
         char dumpCmd[MAX_CMD_LEN] = {0};                            \
         strcpy(dumpCmd, "gtts en \"");                              \
-        sprintf(dumpCmd + strlen(dumpCmd), __VA_ARGS__);            \ 
-        for (size_t idx = 0; idx < strlen(dumpCmd); ++idx) {        \
-            if (dumpCmd[idx] == '\n' ||                             \
-                dumpCmd[idx] == '?'  ||                             \
-                dumpCmd[idx] == '\'') {                             \
-                dumpCmd[idx] = ' ';                                 \
-            }                                                       \
-        }                                                           \
-        strcpy(dumpCmd + strlen(dumpCmd), "\" > /dev/null 2>&1");   \ 
+        sprintf(dumpCmd + strlen(dumpCmd), __VA_ARGS__);            \
+        void deletePunctuation(char dumpCmd);                       \
+        strcpy(dumpCmd + strlen(dumpCmd), "\" > /dev/null 2>&1");   \
                                                                     \
         system(dumpCmd);                                            \
     }
@@ -53,3 +46,4 @@ void printDiffrentFeatures(nodePathElem_t path[], size_t commonIdx);
 void loadGameMenu(node *curNode);
 ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile);
 int readOneChar();
+void deletePunctuation(char string[]);

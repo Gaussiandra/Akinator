@@ -4,6 +4,8 @@
 #include <cassert>
 #include "tree.hpp"
 
+const size_t MAX_NODE_COUNT = 250;
+
 size_t buildTreeFromStr(char *inputSequence, size_t length, size_t i, node *curNode) {
     assert(inputSequence);
 

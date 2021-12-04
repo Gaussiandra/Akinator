@@ -2,7 +2,15 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
+#include "tree.hpp"
 #include "akinator.hpp"
+
+const char dotSavingPath[] = "dump.dot",
+           picSavingPath[] = "dump.png";
+
+const size_t MAX_CMD_LEN = 250;
+const size_t MAX_NODE_NAME_LEN = 100;
+const char FIRST_NODE_NAME[] = "Z";
 
 int main(const int argc, const char *argv[]) {
     if (argc != 2) {
@@ -10,12 +18,13 @@ int main(const int argc, const char *argv[]) {
         return WRONG_ARGUMENTS_NUMBER;
     }
 
+
     char *inputSequence = nullptr;
     size_t length = 0;
-    RETURN_ON_ERROR(readDataFromPath(argv[1], &inputSequence, &length));
+    RETURN_ON_ERROR(readDataFromPath(argv[1], &inputSequence, &length)); 
     node *root = createNode();
     buildTreeFromStr(inputSequence, length, 1, root);
-
+    
     loadGameMenu(root);
 
     clearTree(root);
@@ -207,12 +216,15 @@ bool printNegativeFeatures(nodePathElem_t path[], char name[], bool isPosPrinted
 void showDifferences(node *curNode) {
     assert(curNode);
 
-    char name1[MAX_NODE_NAME_LEN] = {0},
-         name2[MAX_NODE_NAME_LEN] = {0};
-    nodePathElem_t path1[MAX_NODE_COUNT],
-                   path2[MAX_NODE_COUNT];
+    char name1[MAX_NODE_NAME_LEN] = "",
+         name2[MAX_NODE_NAME_LEN] = "";
+
+    nodePathElem_t path1[MAX_NODE_COUNT] = {},
+                   path2[MAX_NODE_COUNT] = {};
+
     outputString("Enter the first character: ");
     scanf("%s", name1); getchar(); 
+
     outputString("Enter the second character: ");
     scanf("%s", name2); getchar();
 
@@ -221,11 +233,13 @@ void showDifferences(node *curNode) {
 
     outputString("%s and %s have in common: ", name1, name2);
     size_t commonFeatsIdx = printCommonFeatures(path1, path2);
+
     if (!commonFeatsIdx) {
         outputString("nothing");
     }
     outputString(".\n%s: ", name1);
     printDiffrentFeatures(path1, commonFeatsIdx);
+
     outputString(".\n%s: ", name2);
     printDiffrentFeatures(path2, commonFeatsIdx);
 }
@@ -319,7 +333,7 @@ ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile) {
     // fread on Windows returns readingResult <= szFile due to deleting /r from stream
     size_t readingResult = fread(*string, sizeof(char), *szFile, file);
     *szFile = readingResult;
-    *(*string + readingResult) = '\0';
+    (*string)[readingResult] = '\0';
 
     fclose(file);
     return OKAY;
@@ -328,4 +342,18 @@ ErrorCodes readDataFromPath(const char *path, char **string, size_t *szFile) {
 int readOneChar() {
     int input = getchar(); getchar();
     return input;
+}
+
+void deletePunctuation(char string[]) {
+    const char punct[] = "\n?[]\':.,";
+    size_t stringLen = strlen(string),
+           punctLen  = strlen(punct);
+
+    for (size_t strI = 0; strI < stringLen; ++strI) {
+        for (size_t punctI = 0; punctI < punctLen; ++punctLen) {
+            if (string[strI] == punct[punctI]) {
+                string[strI] = ' ';
+            }
+        }
+    }
 }

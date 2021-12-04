@@ -1,4 +1,7 @@
-const size_t MAX_NODE_COUNT = 250;
+#pragma once
+
+// const size_t MAX_NODE_COUNT = 250;
+extern const size_t MAX_NODE_COUNT;
 
 struct node {
     char *data   = nullptr;
