@@ -24,7 +24,7 @@ enum ErrorCodes {
         char dumpCmd[MAX_CMD_LEN] = {0};                            \
         strcpy(dumpCmd, "gtts en \"");                              \
         sprintf(dumpCmd + strlen(dumpCmd), __VA_ARGS__);            \
-        void deletePunctuation(char dumpCmd);                       \
+        deletePunctuation(dumpCmd);                                 \
         strcpy(dumpCmd + strlen(dumpCmd), "\" > /dev/null 2>&1");   \
                                                                     \
         system(dumpCmd);                                            \

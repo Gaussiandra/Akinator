@@ -350,7 +350,7 @@ void deletePunctuation(char string[]) {
            punctLen  = strlen(punct);
 
     for (size_t strI = 0; strI < stringLen; ++strI) {
-        for (size_t punctI = 0; punctI < punctLen; ++punctLen) {
+        for (size_t punctI = 0; punctI < punctLen; ++punctI) {
             if (string[strI] == punct[punctI]) {
                 string[strI] = ' ';
             }
