@@ -5,13 +5,6 @@
 #include "tree.hpp"
 #include "akinator.hpp"
 
-const char dotSavingPath[] = "dump.dot",
-           picSavingPath[] = "dump.png";
-
-const size_t MAX_CMD_LEN = 250;
-const size_t MAX_NODE_NAME_LEN = 100;
-const char FIRST_NODE_NAME[] = "Z";
-
 int main(const int argc, const char *argv[]) {
     if (argc != 2) {
         printf("Wrong number of arguments.\n");
@@ -61,11 +54,11 @@ void playGame(node *curNode) {
                          featureName[MAX_NODE_NAME_LEN] = {0};
 
                     outputString("Enter new character name: ");
-                    fgets(charName, MAX_NODE_NAME_LEN, stdin);
+                    fgets(charName, (int) MAX_NODE_NAME_LEN, stdin);
                     charName[strlen(charName) - 1] = '\0';
 
                     outputString("Enter character's feature: ");
-                    fgets(featureName, MAX_NODE_NAME_LEN, stdin);
+                    fgets(featureName, (int) MAX_NODE_NAME_LEN, stdin);
                     featureName[strlen(featureName) - 1] = '\0';
                     addNewCharacter(curNode, charName, featureName);
                     outputString("Character was added.\n");
@@ -108,48 +101,6 @@ void addNewCharacter(node *curNode, char name[], char feature[]) {
     (*nodeToChange)->right = curNode;
 
     curNode->parent = *nodeToChange;
-}
-
-void dumpGraph(FILE *dotFile, node *curNode, size_t depth, const char prevName[]) {
-    assert(dotFile);
-    assert(curNode);
-    assert(prevName);
-
-    if (depth == 1) {
-        fprintf(dotFile, "%s", "digraph G {\n");
-    }
-
-    fprintf(dotFile, "%s [shape=rect, label=\"%s\"];\n", prevName, curNode->data);
-
-    char newName[MAX_NODE_NAME_LEN] = {0};
-    strcpy(newName, prevName);
-    size_t newNameLen = strlen(newName);
-    if (curNode->left) {
-        newName[newNameLen] = 'L';
-        fprintf(dotFile, "%s -> %s;\n", prevName, newName);
-        dumpGraph(dotFile, curNode->left, depth + 1, newName);
-    }
-    if (curNode->right) {
-        newName[newNameLen] = 'R';
-        fprintf(dotFile, "%s -> %s;\n", prevName, newName);
-        dumpGraph(dotFile, curNode->right, depth + 1, newName);
-    }
-
-    if (depth == 1) {
-        fprintf(dotFile, "%s", "}");
-    }
-}
-
-void saveGraphPic(node *curNode) {
-    assert(curNode);
-
-    FILE *dotFile = fopen(dotSavingPath, "w");
-    dumpGraph(dotFile, curNode, 1);
-    fclose(dotFile);
-
-    char dumpCmd[MAX_CMD_LEN] = {0};
-    sprintf(dumpCmd, "dot -Tpng %s -o %s", dotSavingPath, picSavingPath);
-    system(dumpCmd);
 }
 
 void showCharDescription(node *curNode) {

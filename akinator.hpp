@@ -2,11 +2,6 @@
 
 #include "tree.hpp"
 
-extern const char dotSavingPath[], picSavingPath[];
-extern const size_t MAX_CMD_LEN;
-extern const size_t MAX_NODE_NAME_LEN;
-extern const char FIRST_NODE_NAME[];
-
 enum ErrorCodes {
     OKAY = 0,
     WRONG_ARGUMENTS_NUMBER,
@@ -35,8 +30,6 @@ enum ErrorCodes {
 
 void playGame(node *curNode);
 void addNewCharacter(node *curNode, char name[], char feature[]);
-void dumpGraph(FILE *dotFile, node *curNode, size_t depth, const char prevName[] = FIRST_NODE_NAME);
-void saveGraphPic(node *curNode);
 void showCharDescription(node *curNode);
 bool printPositiveFeatures(nodePathElem_t path[], char name[]);
 bool printNegativeFeatures(nodePathElem_t path[], char name[], bool isPosPrinted);

@@ -4,7 +4,13 @@
 #include <cassert>
 #include "tree.hpp"
 
+const size_t MAX_CMD_LEN = 250;
 const size_t MAX_NODE_COUNT = 250;
+const size_t MAX_NODE_NAME_LEN = 100;
+const char FIRST_NODE_NAME[] = "Z";
+
+const char dotSavingPath[] = "dump.dot",
+           picSavingPath[] = "dump.png";
 
 size_t buildTreeFromStr(char *inputSequence, size_t length, size_t i, node *curNode) {
     assert(inputSequence);
@@ -56,6 +62,48 @@ bool getNodePath(nodePathElem_t path[], const char name[], node *curNode, bool i
     newElem.nodePtr = nullptr;
     path[--arrSize] = newElem;
     return false;
+}
+
+void dumpGraph(FILE *dotFile, node *curNode, size_t depth, const char prevName[]) {
+    assert(dotFile);
+    assert(curNode);
+    assert(prevName);
+
+    if (depth == 1) {
+        fprintf(dotFile, "%s", "digraph G {\n");
+    }
+
+    fprintf(dotFile, "%s [shape=rect, label=\"%s\"];\n", prevName, curNode->data);
+
+    char newName[MAX_NODE_NAME_LEN] = {0};
+    strcpy(newName, prevName);
+    size_t newNameLen = strlen(newName);
+    if (curNode->left) {
+        newName[newNameLen] = 'L';
+        fprintf(dotFile, "%s -> %s;\n", prevName, newName);
+        dumpGraph(dotFile, curNode->left, depth + 1, newName);
+    }
+    if (curNode->right) {
+        newName[newNameLen] = 'R';
+        fprintf(dotFile, "%s -> %s;\n", prevName, newName);
+        dumpGraph(dotFile, curNode->right, depth + 1, newName);
+    }
+
+    if (depth == 1) {
+        fprintf(dotFile, "%s", "}");
+    }
+}
+
+void saveGraphPic(node *curNode) {
+    assert(curNode);
+
+    FILE *dotFile = fopen(dotSavingPath, "w");
+    dumpGraph(dotFile, curNode, 1);
+    fclose(dotFile);
+
+    char dumpCmd[MAX_CMD_LEN] = {0};
+    sprintf(dumpCmd, "dot -Tpng %s -o %s", dotSavingPath, picSavingPath);
+    system(dumpCmd);
 }
 
 node* createNode(node *parent) {
